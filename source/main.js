@@ -48,9 +48,17 @@ that.actualFrame = 0;
 that.X = 0;
 that.Y = 0;	
 
+that.speed = 1;
+
 that.setPosition = function(x, y){
-that.X = x;
+if (x > 100){
+	that.X = x;
+}
 that.Y = y;
+}
+
+that.run = function(){
+	that.setPosition(that.X - that.speed, that.Y);
 }
 
 that.interval = 0;
@@ -143,12 +151,13 @@ document.addEventListener('keydown', function(event) {
 });
 
 document.addEventListener('mousemove', function(e){
-	player.setPosition(15, e.pageY);
+		player.setPosition(15, e.pageY);
 });
 
 
 var GameLoop = function(){
 clear();
+tank.run();
 tank.draw();
 player.draw();
 
