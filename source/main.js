@@ -85,7 +85,60 @@ that.interval++;
 
 tank.setPosition(~~((width-tank.width)/2), ~~((height - tank.height)/2));
 
+function Fire(x, y, Dx, Dy){
+	var that = this;
+	that.X = x;
+	that.Y = y;
+	that.destX = Dx;
+	that.destY = Dy;
+	that.speed = 10;
+	
+	that.image = new Image();
+	that.image.src = "fire.png";
+	that.width = 18;
+	that.height = 8;
+	that.frames = 0;
+	that.actualFrame = 0;
+	
+	that.setPosition = function(x, y){
+		that.X = x;
+		that.Y = y;
+	}
+	
+	that.move = function(){
+		if (that.Y > that.destY){
+			that.Y -= 1;
+		}
+		else if (that.Y < that.destY){
+			that.Y += 1;
+		}
+		that.setPosition(that.X + that.speed, that.Y);
+	}
+	
+	that.interval = 0;
+	that.draw = function(){
+		try {
+			ctx.drawImage(that.image, 0, that.height * that.actualFrame, that.width, that.height, that.X, that.Y, that.width, that.height);
+		}
+		catch (e) {
+		};
 
+		if (that.interval == 4 ) {
+			if (that.actualFrame == that.frames) {
+				that.actualFrame = 0;
+			}
+			else {
+				that.actualFrame++;
+			}
+			that.interval = 0;
+		}
+		that.interval++;	
+	}
+	
+}
+
+var howManyFire = 0;
+var fireArray = [];// = new Fire(0,0,1,1);
 
 
 var player = new (function(){
@@ -99,6 +152,7 @@ var player = new (function(){
 	that.actualFrame = 0;
 	that.X = 0;
 	that.Y = 0;	
+	that.gunY = 27;//the y coordinate where the railgun shoots at in relation to top of the player sprite
 
 	that.setPosition = function(x, y){
 		that.X = x;
@@ -109,6 +163,12 @@ var player = new (function(){
 		if (that.Y + that.height > height){
 			that.Y = height - that.height;
 		}
+	}
+	
+	that.fire = function(){
+		var newFire = new Fire(that.X + that.width, that.Y + that.gunY, 100, that.Y + that.gunY);
+		fireArray.push(newFire);
+		howManyFire += 1;
 	}
 
 	that.interval = 0;
@@ -154,14 +214,22 @@ document.addEventListener('mousemove', function(e){
 		player.setPosition(15, e.pageY);
 });
 
+document.addEventListener('mousedown', function(e){
+		player.fire();
+});
+
 
 var GameLoop = function(){
-clear();
-tank.run();
-tank.draw();
-player.draw();
+	clear();
+	tank.run();
+	tank.draw();
+	player.draw();
+	for (var i = 0; i < howManyFire; i++){
+		fireArray[i].move();
+		fireArray[i].draw();
+	}
 
-gLoop = setTimeout(GameLoop, 1000 / 50);
+	gLoop = setTimeout(GameLoop, 1000 / 50);
 }
 
 GameLoop();
