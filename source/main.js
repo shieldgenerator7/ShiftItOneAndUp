@@ -81,41 +81,47 @@ tank.setPosition(~~((width-tank.width)/2), ~~((height - tank.height)/2));
 
 
 var player = new (function(){
-var that = this;
-that.image = new Image();
+	var that = this;
+	that.image = new Image();
 
-that.image.src = "soldier_placeholder.png"
-that.width = 82;
-that.height = 86;
-that.frames = 0;
-that.actualFrame = 0;
-that.X = 0;
-that.Y = 0;	
+	that.image.src = "soldier_placeholder.png"
+	that.width = 82;
+	that.height = 86;
+	that.frames = 0;
+	that.actualFrame = 0;
+	that.X = 0;
+	that.Y = 0;	
 
-that.setPosition = function(x, y){
-that.X = x;
-that.Y = y;
-}
+	that.setPosition = function(x, y){
+		that.X = x;
+		that.Y = y;
+		if (that.Y < 0){
+			that.Y = 0;
+		}
+		if (that.Y + that.height > height){
+			that.Y = height - that.height;
+		}
+	}
 
-that.interval = 0;
-that.draw = function(){
-try {
-ctx.drawImage(that.image, 0, that.height * that.actualFrame, that.width, that.height, that.X, that.Y, that.width, that.height);
-}
-catch (e) {
-};
+	that.interval = 0;
+	that.draw = function(){
+		try {
+			ctx.drawImage(that.image, 0, that.height * that.actualFrame, that.width, that.height, that.X, that.Y, that.width, that.height);
+		}
+		catch (e) {
+		};
 
-if (that.interval == 4 ) {
-if (that.actualFrame == that.frames) {
-that.actualFrame = 0;
-}
-else {
-that.actualFrame++;
-}
-that.interval = 0;
-}
-that.interval++;	
-}
+		if (that.interval == 4 ) {
+			if (that.actualFrame == that.frames) {
+				that.actualFrame = 0;
+			}
+			else {
+				that.actualFrame++;
+			}
+			that.interval = 0;
+		}
+		that.interval++;	
+	}
 })();
 
 var yPos = 185;
@@ -125,15 +131,19 @@ player.setPosition(15, yPos);
 
 document.addEventListener('keydown', function(event) {
     if(event.keyCode == 40) {
-	//Movin' on up...
-	yPos = yPos + 5;
+		//Movin' on up...
+		yPos = yPos + 5;
         player.setPosition(15, yPos);
     }
     else if(event.keyCode == 38) {
-	//Goin' down...
-	yPos = yPos - 5;
+		//Goin' down...
+		yPos = yPos - 5;
         player.setPosition(15, yPos);
     }
+});
+
+document.addEventListener('mousemove', function(e){
+	player.setPosition(15, e.pageY);
 });
 
 
