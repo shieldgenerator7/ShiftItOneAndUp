@@ -10,11 +10,9 @@ c.width = width;
 c.height = height;
 
 
-//here we calculate a random Y position for spawning dragons
+//global variables used in randomly calculating Y spawn pos of dragons
 var min = 0;
 var max = 364;
-// and the formula for calculating a random value is:
-var random = Math.floor(Math.random() * (max - min + 1)) + min;
 
 
 var clear = function(){
@@ -43,6 +41,9 @@ ctx.drawImage(img,0,0);
 // }
 // };
 
+
+
+//code for tank dragon
 var tank = new (function(){
 var that = this;
 that.image = new Image();
@@ -54,6 +55,9 @@ that.frames = 0;
 that.actualFrame = 0;
 that.X = 0;
 that.Y = 0;	
+
+//calculate random Y pos for tank
+that.tankRandom = Math.floor(Math.random() * (max - min + 1)) + min;
 
 that.speed = 1;
 
@@ -87,10 +91,130 @@ that.interval = 0;
 }
 that.interval++;	
 }
+
 })();
 
 //tank is drawn with position set to being slightly off screen with random Y coordinate
-tank.setPosition(~~((width-tank.width)+200), random);
+tank.setPosition(~~((width-tank.width)+200), tank.tankRandom);
+
+
+
+
+
+//code for basic dragon
+var basic = new (function(){
+var that = this;
+that.image = new Image();
+
+that.image.src = "basicdragon_placeholder.png"
+that.width = 175;
+that.height = 79;
+that.frames = 0;
+that.actualFrame = 0;
+that.X = 0;
+that.Y = 0;	
+
+//calculate random Y pos for basic
+that.basicRandom = Math.floor(Math.random() * (max - min + 1)) + min;
+
+that.speed = 2;
+
+that.setPosition = function(x, y){
+if (x > 100){
+	that.X = x;
+}
+that.Y = y;
+}
+
+that.run = function(){
+	that.setPosition(that.X - that.speed, that.Y);
+}
+
+that.interval = 0;
+that.draw = function(){
+try {
+ctx.drawImage(that.image, 0, that.height * that.actualFrame, that.width, that.height, that.X, that.Y, that.width, that.height);
+}
+catch (e) {
+};
+
+if (that.interval == 4 ) {
+if (that.actualFrame == that.frames) {
+that.actualFrame = 0;
+}
+else {
+that.actualFrame++;
+}
+that.interval = 0;
+}
+that.interval++;	
+}
+})();
+
+//basic is drawn with position set to being slightly off screen with random Y coordinate
+basic.setPosition(~~((width-basic.width)+200), basic.basicRandom);
+
+
+
+
+
+
+//code for speedy dragon
+var speedy = new (function(){
+var that = this;
+that.image = new Image();
+
+that.image.src = "speeddragon_placeholder.png"
+that.width = 110;
+that.height = 70;
+that.frames = 0;
+that.actualFrame = 0;
+that.X = 0;
+that.Y = 0;	
+
+//calculate random Y pos for speedy
+that.speedyRandom = Math.floor(Math.random() * (max - min + 1)) + min;
+
+that.speed = 4;
+
+that.setPosition = function(x, y){
+if (x > 100){
+	that.X = x;
+}
+that.Y = y;
+}
+
+that.run = function(){
+	that.setPosition(that.X - that.speed, that.Y);
+}
+
+that.interval = 0;
+that.draw = function(){
+try {
+ctx.drawImage(that.image, 0, that.height * that.actualFrame, that.width, that.height, that.X, that.Y, that.width, that.height);
+}
+catch (e) {
+};
+
+if (that.interval == 4 ) {
+if (that.actualFrame == that.frames) {
+that.actualFrame = 0;
+}
+else {
+that.actualFrame++;
+}
+that.interval = 0;
+}
+that.interval++;	
+}
+})();
+
+//speedy is drawn with position set to being slightly off screen with random Y coordinate
+speedy.setPosition(~~((width-speedy.width)+200), speedy.speedyRandom);
+
+
+
+
 
 function Fire(x, y, Dx, Dy){
 	var that = this;
@@ -228,9 +352,18 @@ document.addEventListener('mousedown', function(e){
 
 var GameLoop = function(){
 	clear();
+	
 	tank.run();
 	tank.draw();
+	
+	basic.run();
+	basic.draw();
+	
+	speedy.run();
+	speedy.draw();
+	
 	player.draw();
+	
 	for (var i = 0; i < howManyFire; i++){
 		fireArray[i].move();
 		fireArray[i].draw();
