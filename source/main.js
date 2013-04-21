@@ -10,6 +10,13 @@ c.width = width;
 c.height = height;
 
 
+//here we calculate a random Y position for spawning dragons
+var min = 0;
+var max = 364;
+// and the formula for calculating a random value is:
+var random = Math.floor(Math.random() * (max - min + 1)) + min;
+
+
 var clear = function(){
 var img = document.getElementById("gamebackground");
 	
@@ -82,8 +89,8 @@ that.interval++;
 }
 })();
 
-
-tank.setPosition(~~((width-tank.width)/2), ~~((height - tank.height)/2));
+//tank is drawn with position set to being slightly off screen with random Y coordinate
+tank.setPosition(~~((width-tank.width)+200), random);
 
 function Fire(x, y, Dx, Dy){
 	var that = this;
