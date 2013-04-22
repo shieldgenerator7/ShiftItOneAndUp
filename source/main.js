@@ -213,7 +213,10 @@ that.interval++;
 speedy.setPosition(~~((width-speedy.width)+200), speedy.speedyRandom);
 
 
-
+var dragons = [];
+dragons.push(tank);
+dragons.push(basic);
+dragons.push(speedy);
 
 
 function Fire(x, y, Dx, Dy){
@@ -230,6 +233,7 @@ function Fire(x, y, Dx, Dy){
 	that.height = 8;
 	that.frames = 0;
 	that.actualFrame = 0;
+	that.markForDeletion = false;
 	
 	that.setPosition = function(x, y){
 		that.X = x;
@@ -244,32 +248,56 @@ function Fire(x, y, Dx, Dy){
 			that.Y += 1;
 		}
 		that.setPosition(that.X + that.speed, that.Y);
+		that.checkCollision();
+	}
+	
+	that.checkCollision = function(){
+		for (var i = 0; i < 3; i++){
+			if (that.X + that.width > dragons[i].X){
+				if (that.X < dragons[i].X + dragons[i].width){
+					if (that.Y + that.height > dragons[i].Y){
+						if (that.Y < dragons[i].Y + dragons[i].height){
+							that.doDamage(dragons[i]);
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	that.doDamage = function(dragon){
+		//dragon.damage();
+		that.remove();
+	}
+	
+	that.remove = function(){
+		that.markForDeletion = true;
 	}
 	
 	that.interval = 0;
 	that.draw = function(){
-		try {
-			ctx.drawImage(that.image, 0, that.height * that.actualFrame, that.width, that.height, that.X, that.Y, that.width, that.height);
-		}
-		catch (e) {
-		};
+			try {
+				ctx.drawImage(that.image, 0, that.height * that.actualFrame, that.width, that.height, that.X, that.Y, that.width, that.height);
+			}
+			catch (e) {
+			};
 
-		if (that.interval == 4 ) {
-			if (that.actualFrame == that.frames) {
-				that.actualFrame = 0;
+			if (that.interval == 4 ) {
+				if (that.actualFrame == that.frames) {
+					that.actualFrame = 0;
+				}
+				else {
+					that.actualFrame++;
+				}
+				that.interval = 0;
 			}
-			else {
-				that.actualFrame++;
-			}
-			that.interval = 0;
-		}
-		that.interval++;	
+			that.interval++;	
 	}
 	
 }
 
 var howManyFire = 0;
-var fireArray = [];// = new Fire(0,0,1,1);
+var fireArray = [];
 
 
 var player = new (function(){
@@ -367,6 +395,10 @@ var GameLoop = function(){
 	for (var i = 0; i < howManyFire; i++){
 		fireArray[i].move();
 		fireArray[i].draw();
+		 if (fireArray[i].markForDeletion){
+			fireArray.splice(i,1);
+			howManyFire -= 1;
+		 }
 	}
 
 	gLoop = setTimeout(GameLoop, 1000 / 50);
