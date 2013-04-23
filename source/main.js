@@ -59,7 +59,12 @@ that.Y = 0;
 //calculate random Y pos for tank
 that.tankRandom = Math.floor(Math.random() * (max - min + 1)) + min;
 
+
+//Tank Dragon Attributes
+that.health = 10;
+that.damage = 1;
 that.speed = 1;
+that.name = 'tank';
 
 that.setPosition = function(x, y){
 if (x > 100){
@@ -74,6 +79,7 @@ that.run = function(){
 
 that.interval = 0;
 that.draw = function(){
+dragons.push(tank);
 try {
 ctx.drawImage(that.image, 0, that.height * that.actualFrame, that.width, that.height, that.X, that.Y, that.width, that.height);
 }
@@ -92,6 +98,11 @@ that.interval = 0;
 that.interval++;	
 }
 
+//Function called when health reaches 0
+that.remove = function(){
+		//that.markForDeletion = true;
+		ctx.clearRect(that.X, that.Y, 120, 116);
+	}
 })();
 
 //tank is drawn with position set to being slightly off screen with random Y coordinate
@@ -117,7 +128,11 @@ that.Y = 0;
 //calculate random Y pos for basic
 that.basicRandom = Math.floor(Math.random() * (max - min + 1)) + min;
 
+//Basic Dragon Attributes
+that.health = 6;
+that.damage = 2;
 that.speed = 2;
+that.name = 'basic';
 
 that.setPosition = function(x, y){
 if (x > 100){
@@ -132,6 +147,7 @@ that.run = function(){
 
 that.interval = 0;
 that.draw = function(){
+dragons.push(basic);
 try {
 ctx.drawImage(that.image, 0, that.height * that.actualFrame, that.width, that.height, that.X, that.Y, that.width, that.height);
 }
@@ -149,6 +165,11 @@ that.interval = 0;
 }
 that.interval++;	
 }
+//Function called with health reaches 0
+that.remove = function(){
+		//that.markForDeletion = true;
+		ctx.clearRect(that.X, that.Y, 175, 79);
+	}
 })();
 
 //basic is drawn with position set to being slightly off screen with random Y coordinate
@@ -175,7 +196,11 @@ that.Y = 0;
 //calculate random Y pos for speedy
 that.speedyRandom = Math.floor(Math.random() * (max - min + 1)) + min;
 
+//Speedy Dragon Attributes
+that.health = 4;
+that.damage = 6;
 that.speed = 4;
+that.name = 'speedy';
 
 that.setPosition = function(x, y){
 if (x > 100){
@@ -190,6 +215,7 @@ that.run = function(){
 
 that.interval = 0;
 that.draw = function(){
+dragons.push(speedy);
 try {
 ctx.drawImage(that.image, 0, that.height * that.actualFrame, that.width, that.height, that.X, that.Y, that.width, that.height);
 }
@@ -207,16 +233,21 @@ that.interval = 0;
 }
 that.interval++;	
 }
+//Function called when health reaches 0
+that.remove = function(){
+		//that.markForDeletion = true;
+		ctx.clearRect(that.X, that.Y, 110, 70);
+	}
 })();
 
 //speedy is drawn with position set to being slightly off screen with random Y coordinate
 speedy.setPosition(~~((width-speedy.width)+200), speedy.speedyRandom);
 
-
+var howManyDragons = 0;
 var dragons = [];
 dragons.push(tank);
 dragons.push(basic);
-dragons.push(speedy);
+dragons.push(speedy); 
 
 
 function Fire(x, y, Dx, Dy){
@@ -226,6 +257,7 @@ function Fire(x, y, Dx, Dy){
 	that.destX = Dx;
 	that.destY = Dy;
 	that.speed = 10;
+	that.damage = 1;
 	
 	that.image = new Image();
 	that.image.src = "fire.png";
@@ -265,9 +297,16 @@ function Fire(x, y, Dx, Dy){
 		}
 	}
 	
-	that.doDamage = function(dragon){
-		//dragon.damage();
-		that.remove();
+	//I think this is to calculate damage done to a dragon????
+ 	that.doDamage = function(dragon){
+	
+			dragon.health = dragon.health - that.damage;//dragon.damage();
+			that.remove();
+			if (dragon.health <= 0){
+				dragon.remove();
+				}
+			//for testing purposes...
+			alert(dragon.health);
 	}
 	
 	that.remove = function(){
@@ -299,35 +338,38 @@ function Fire(x, y, Dx, Dy){
 var howManyFire = 0;
 var fireArray = [];
 
+
 //Brad: begin code for firing sound, taken from http://www.javascriptkit.com/script/script2/soundlink.shtml
 var html5_audiotypes={
-	"wav": "audio/wav"
+"wav": "audio/wav"
 }
 
 function createsoundbite(sound){
-	var html5audio=document.createElement('audio')
-	if (html5audio.canPlayType){ //check support for HTML5 audio
-		for (var i=0; i<arguments.length; i++){
-			var sourceel=document.createElement('source')
-			sourceel.setAttribute('src', arguments[i])
-			if (arguments[i].match(/\.(\w+)$/i))
-				sourceel.setAttribute('type', html5_audiotypes[RegExp.$1])
-			html5audio.appendChild(sourceel)
-		}
-		html5audio.load()
-		html5audio.playclip=function(){
-			html5audio.pause()
-			html5audio.currentTime=0
-			html5audio.play()
-		}
-		return html5audio
-	}
-	else{
-		return {playclip:function(){throw new Error("Your browser doesn't support HTML5 audio. Try using Google Chrome!")}}
-	}
+var html5audio=document.createElement('audio')
+if (html5audio.canPlayType){ //check support for HTML5 audio
+for (var i=0; i<arguments.length; i++){
+var sourceel=document.createElement('source')
+sourceel.setAttribute('src', arguments[i])
+if (arguments[i].match(/\.(\w+)$/i))
+sourceel.setAttribute('type', html5_audiotypes[RegExp.$1])
+html5audio.appendChild(sourceel)
+}
+html5audio.load()
+html5audio.playclip=function(){
+html5audio.pause()
+html5audio.currentTime=0
+html5audio.play()
+}
+return html5audio
+}
+else{
+return {playclip:function(){throw new Error("Your browser doesn't support HTML5 audio. Try using Google Chrome!")}}
+}
 }
 var railgunsound=createsoundbite("railgun_sound.wav")
 //Brad: end code for railgun sound
+
+
 
 
 var player = new (function(){
@@ -423,6 +465,8 @@ var GameLoop = function(){
 	
 	player.draw();
 	
+	
+	
 	for (var i = 0; i < howManyFire; i++){
 		fireArray[i].move();
 		fireArray[i].draw();
@@ -431,6 +475,7 @@ var GameLoop = function(){
 			howManyFire -= 1;
 		 }
 	}
+	
 
 	gLoop = setTimeout(GameLoop, 1000 / 50);
 }
